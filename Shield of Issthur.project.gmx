@@ -46,6 +46,7 @@
     </objects>
     <object>objects\obj_wall</object>
     <object>objects\obj_trueplayer</object>
+    <object>objects\obj_controlledjumpplayer</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\rm_testroom</room>

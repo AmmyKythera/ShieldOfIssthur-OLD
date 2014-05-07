@@ -29,10 +29,16 @@
 can_jump = false;
 spd_scale = 8;
 
+facing = 1;
+
 grav = .25;
 hsp=0;
 vsp=0;
 jmp_speed = -4;  //must be negative
+
+jumping = false;
+jump_frames = 0;
+jump_frames_max = 30;
 </string>
           </argument>
         </arguments>
@@ -61,11 +67,13 @@ key_right = keyboard_check(vk_right);
 key_left = -keyboard_check(vk_left);
 key_down = keyboard_check(vk_down);
 key_up = -keyboard_check(vk_up);
-key_spc = keyboard_check_pressed(vk_space);
+key_spc = keyboard_check(vk_space);
 
 //react
 //vert_move = key_down + key_up;
 horz_move = key_left + key_right;
+
+facing = horz_move;
 
 
 hsp = horz_move * spd_scale;
@@ -78,15 +86,29 @@ if (place_meeting(x+hsp,y,obj_wall)){
     hsp=0; 
 }
 
-
-if(key_spc and can_jump){
-    vsp = key_spc * jmp_speed * spd_scale;
-    can_jump = false;
+vsp=0;
+if(key_spc and (can_jump or jumping)){
+    if(jump_frames == 0 and can_jump){
+        vsp = jmp_speed;
+        can_jump = false;
+        jumping = true;
+    }
+    else if(jump_frames &lt; jump_frames_max and jumping){
+        vsp = jmp_speed*spd_scale/4;
+        jump_frames++;
+    }
+    else{
+        jumping = false;
+    }
+}
+else{
+    jumping = false;
+    if(jump_frames &gt; 0){
+        jump_frames = 0;
+    }   
+    vsp += grav * spd_scale*4;
 }
 
-if(vsp &lt; 7*spd_scale){
-    vsp+=grav*spd_scale;
-}
 // vert collision
 if (place_meeting(x,y+vsp,obj_wall)){
     while(!place_meeting(x,y+sign(vsp),obj_wall)){
@@ -94,7 +116,6 @@ if (place_meeting(x,y+vsp,obj_wall)){
     }
     vsp=0;
 }
-
 
 x+=hsp;
 y+=vsp;
@@ -122,6 +143,31 @@ y+=vsp;
 
 if(place_meeting(x,y+1,obj_wall)){
     can_jump = true;
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// set facing
+
+if(facing != 0){
+    image_xscale = facing;
 }
 </string>
           </argument>
